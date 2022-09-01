@@ -1,0 +1,54 @@
+name: Openwrt build for Mediatek RB M33G
+
+on:
+  workflow_dispatch:
+
+env:
+  OPENWRT_GIT: https://git.openwrt.org/openwrt/openwrt.git
+  CUSTOM_FILE_URL: "https://raw.githubusercontent.com/astitov/m33g/main/downloaded_custom.txt"
+  DIFFCONFIG_URL: "https://raw.githubusercontent.com/astitov/m33g/main/diffconfig"
+  BUILDROOT: buildroot
+  
+jobs:
+  vers_matrix:
+    strategy:
+      matrix:
+        ver: [v22.03.0-rc6, v21.02.3]
+    runs-on: ubuntu-latest
+
+    env:
+      OPENWRT_RELEASE: ${{ matrix.ver }}
+
+    steps:
+      - name: Check out Openwrt release ${{ matrix.ver }}
+        run: |
+          git clone --branch $OPENWRT_RELEASE $OPENWRT_GIT $BUILDROOT 
+          
+      - name: Update all feeds
+        working-directory: ${{ env.BUILDROOT }}
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          curl -o .config $DIFFCONFIG_URL
+      
+      - name: Create custom files in future /root dir
+        working-directory: ${{ env.BUILDROOT }}
+        run: |
+          mkdir -p ./files/root
+          curl -o ./files/root/custom.txt $CUSTOM_FILE_URL
+          date >> ./files/root/custom.txt
+          
+      - name: Build Openwrt
+        working-directory: ${{ env.BUILDROOT }}
+        run: |
+          make defconfig
+          make
+          ls -lhA bin/
+                  
+      - name: Upload compiled files
+        uses: actions/upload-artifact@v3
+        with:
+          name: m33g-firmware-${{ env.OPENWRT_RELEASE }}
+          path: ${{ github.workspace }}/${{ env.BUILDROOT }}/bin
+          retention-days: 7
+          
