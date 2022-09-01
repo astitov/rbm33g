@@ -5,8 +5,8 @@ on:
 
 env:
   OPENWRT_GIT: https://git.openwrt.org/openwrt/openwrt.git
-  CUSTOM_FILE_URL: "https://raw.githubusercontent.com/astitov/m33g/main/downloaded_custom.txt"
-  DIFFCONFIG_URL: "https://raw.githubusercontent.com/astitov/m33g/main/diffconfig"
+  CUSTOM_FILE_URL: "https://raw.githubusercontent.com/astitov/rbm33g/main/downloaded_custom.txt"
+  DIFFCONFIG_URL: "https://raw.githubusercontent.com/astitov/rbm33g/main/diffconfig"
   BUILDROOT: buildroot
   
 jobs:
@@ -43,7 +43,6 @@ jobs:
         run: |
           make defconfig
           make
-          ls -lhA bin/
                   
       - name: Upload compiled files
         uses: actions/upload-artifact@v3
