@@ -13,7 +13,7 @@ jobs:
   vers_matrix:
     strategy:
       matrix:
-        ver: [v22.03.0-rc6, v21.02.3]
+        ver: [v22.03.0-rc6, v21.02.3, v19.07.10]
     runs-on: ubuntu-latest
 
     env:
@@ -48,7 +48,7 @@ jobs:
       - name: Upload compiled files
         uses: actions/upload-artifact@v3
         with:
-          name: m33g-firmware-${{ env.OPENWRT_RELEASE }}
+          name: owrt-m33g-firmware-${{ env.OPENWRT_RELEASE }}
           path: ${{ github.workspace }}/${{ env.BUILDROOT }}/bin
           retention-days: 7
           
